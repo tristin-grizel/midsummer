@@ -13,7 +13,7 @@ game_information {
 	written_by = Tristin Grizel Dean
  	uuid = 9eb3f538-4258-42b0-b7f3-ae3e9eb98aec
 	year_of_release = 2023
-	game_version = 1.0.3
+	game_version = 1.0.6
 	compatibility_version = 1
 	copyright_message = Copyright (C) 2022 Tristin Grizel Dean. Not for commercial use. Do not redistribute.
 	aimed_at  = [ children,teenagers,adults ]
@@ -28,14 +28,12 @@ game_information {
    # Make sure to comment out the ENTIRE on_debug section, or your game will skip over the on_startup section.
 
 // on_debug {
-//    : goto "loc_town2";
+//    : goto "loc_witch";
 //    : set_false "tutorial_is_on" ;
 //    : set_true "finished_intro" ;
 //    : set_true "learned_about_mystery" ;
 //    : set_integer var="mystery_clues" value="3" ;
-//    : set_integer var="ollie_found" value="5" ;
 //    : set_integer var="reed_found" value="0" ;
-//    : set_integer var="elle_found" value="5" ;
 //    : set_integer var="clara_found" value="2" ;
 //    : set_integer var="sophie_found" value="5" ;
 //    : set_integer var="francis_found" value="10" ;
@@ -43,11 +41,12 @@ game_information {
 //    : create "z_francis" ;
 //    : create "z_reed" ;
 //    : create "z_sophie" ;
-// //   : create "golden_crown" target="inventory" ;
-//    : create "necklace" target="inventory" ;
-//    : create "ring" target="inventory" ;
+//    : create "hotdog" target="inventory" ;
 //    : add_trait subject="hotdog" trait="t_pickles" ;
+//    : create "golden_crown" target="inventory" ;
 //    : set_integer var = "clues_remain"  value = "0" ;
+//    : set_true "achievement_fed_gryphon_pizza" ;
+//    : set_true "achievement_won_wheel_fortune" ;
 // }
 
 #########################
@@ -57,7 +56,7 @@ game_information {
 vocabulary {
    : adjective / aliases = [poison,poisonous,venomous]
    : noun / aliases = [clue,clues]
-   : noun / aliases = [self,yourself,body,arms,face]
+   : noun / aliases = [self,yourself,body,arms,face,myself,me]
    : noun / aliases = [dirt,soil]
    : noun / aliases = [money,coin,coins,cash]
    : noun / aliases = [news,newspaper,newspapers,book,books,magazine,magazines,media]
@@ -190,6 +189,8 @@ booleans {
    achievement_won_the_game : boolean scope="survivor" ;
    achievement_lost_the_game : boolean scope="survivor" ;
    achievement_brewed_perfume : boolean scope="survivor" ;
+   achievement_brewed_liquid_fire : boolean scope="survivor" ;
+   achievement_belched_fire : boolean scope="survivor" ;
    achievement_gave_witch_apple : boolean scope="survivor" ;
    achievement_fed_gryphon_pizza : boolean scope="survivor" ;
    achievement_won_magic_number : boolean scope="survivor" ;
@@ -256,7 +257,7 @@ strings {
    ) ;
 
    ## ACHIEVEMENTS
-achievements : string "^c^Achievements:^n^{achievement_won_the_game ? `\nWon the game`}{achievement_lost_the_game ? `\nLost the game`}{achievement_gave_witch_apple ? `\nWitches love apples`}{achievement_fed_gryphon_pizza ? `\nGryphons love pizza`}{achievement_won_magic_number ? `\nGuessed the magic number`}{achievement_won_wheel_fortune ? `\nMastered the wheel of fortune`}{achievement_went_swimming ? `\nWent for a swim`}{achievement_returned_necklace ? `\nReturned the stolen necklace`}{achievement_returned_ring ? `\nReturned the stolen ring`}{achievement_new_pet_chicken ? `\nGot a new pet chicken`}{achievement_caught_the_mayor ? `\nCaught the mayor`}" ;
+achievements : string "^c^Achievements:^n^{achievement_won_the_game ? `\nWon the game`}{achievement_lost_the_game ? `\nLost the game`}{achievement_gave_witch_apple ? `\nWitches love apples`}{achievement_fed_gryphon_pizza ? `\nGryphons love pizza`}{achievement_won_magic_number ? `\nGuessed the magic number`}{achievement_won_wheel_fortune ? `\nMastered the wheel of fortune`}{achievement_went_swimming ? `\nWent for a swim`}{achievement_brewed_perfume ? `\nBrewed a floral perfume`}{achievement_brewed_liquid_fire ? `\nBrewed liquid fire`}{achievement_belched_fire ? `\nBelched fire like a dragon`}{achievement_returned_necklace ? `\nReturned the stolen necklace`}{achievement_returned_ring ? `\nReturned the stolen ring`}{achievement_new_pet_chicken ? `\nGot a new pet chicken`}{achievement_caught_the_mayor ? `\nCaught the mayor`}" ;
    
    ## DYNAMIC OBJECTS / SCENERY
    necklace_name : dynamic_string (has_taken "necklace" ? "a necklace[examine necklace]":"something shiny[examine shiny]") ;
@@ -329,7 +330,6 @@ achievements : string "^c^Achievements:^n^{achievement_won_the_game ? `\nWon the
    loc_river2_desc : string "You're on the outskirts of town. <Buddy the dog>[examine dog] prances around your favorite oak tree[examine tree]." ;
    loc_bridge_desc : string "The river flows under a small stone bridge[examine bridge]. A path leads from the bridge to the west, heading into the forest." ;
    loc_enchanted1_desc : string "The river narrows as it moves into the forest. The air here is still, and you can hear an owl hooting in the trees." ;
-   loc_enchanted2_desc : string "A giant tree[examine tree] looms up, buttressing a small cottage[examine cottage]. There is an eerie feeling here." ;
    loc_witch_desc : string "The narrow river meanders around a <witch's hut>[examine witch's hut]. Mist surrounds the hut, making it difficult to peer into the forest." ;
    loc_graveyard_desc : string "You're in an old and forgotten graveyard[examine graveyard], full of crumbling headstones[examine headstones] engraved with names you don't know." ;
    loc_mushrooms1_desc : string "Mushrooms and flowers surround a treehouse[examine treehouse], which is next to a clear creek." ;
@@ -531,7 +531,7 @@ locations {
          : if (!finished_intro && tutorial_is_on) {
             : tutorial "Type EXAMINE MAYOR or X MAYOR." ;
          }
-         : if (finished_intro && (!has_visited "loc_town2" || !has_visited "loc_tower")) {
+         : if (finished_intro && (!has_visited "loc_town2" && !has_visited "loc_tower")) {
             : print "As soon as the mayor finishes his speech, the other kids speed off in their boats to find clues." ;
             : if (tutorial_is_on) {
                : tutorial "Type SOUTH or S to go south in search of clues." ;
@@ -1145,6 +1145,10 @@ locations {
             : set_integer var="darts"  value="3" ;
             : set_true "get_prize" ;
             : redescribe ;
+         }
+         : match "examine zone;examine zones" {
+            : print "Type THROW RED DART AT BLACK ZONE to aim the red dart at the black zone." ;
+            : done ;
          }
          : if (playing_darts) {
             : match "_ hint;_ help;help _;how *;ask *" {
@@ -2328,6 +2332,14 @@ objects {
       noun="ring" experimental_matching_text_sequences=["something sparkly","sparkling object","sparkly object","sparkling","sparkly"]
       traits=[t_item] wearable="true"
    }
+   perfume : object "perfume" {
+      msg="It smells like a nice sunny day in the meadow. Lovely." 
+      noun="perfume" adjective="floral" traits=[t_item]
+   }
+   liquid_fire : object "liquid fire" {
+      msg="The potion is yellow and orange and swirling around. The bottle is hot to the touch." 
+      noun="fire" adjective="liquid" traits=[t_item]
+   }
    plush_toy : object "plush toy[examine plush toy]" {
       msg="{plush_toy_desc}" noun="toy" adjective="plush" listed="true" traits=[t_item]
       drop_message="{unraveled_toy ? `You drop the plush toy.`:`You drop the plush toy, but you have a nagging feeling that you're supposed to do something with it.`}"
@@ -2365,7 +2377,7 @@ objects {
 
    ## CLUES
    clue_1 : object "Clue 1" msg = "<^b^CLUE 1:> <Dogs and pickles go together.>" noun="clue" adjective="1" listed="false" traits=[t_clue] ;
-   clue_2 : object "Clue 2" msg = "<^b^CLUE 2:> <Boil and stir four elements of purple.>" noun="clue" adjective="2" listed="false" traits=[t_clue] ;
+   clue_2 : object "Clue 2" msg = "<^b^CLUE 2:> <Boil and stir three elements of purple.>" noun="clue" adjective="2" listed="false" traits=[t_clue] ;
    clue_3 : object "Clue 3" msg = "<^b^CLUE 3:> <Red on White, Yellow on Black, Blue on Green.>" noun="clue" adjective="3" listed="false" traits=[t_clue] ;
    clue_4 : object "Clue 4" msg = "<^b^CLUE 4:> <Knock on the doors of the Blessed, the Free, and the Loved.>" noun="clue" adjective="fourth" listed="false" traits=[t_clue] ;
    clue_5: object "Clue 5" msg = "<^b^CLUE 5:> <Cast your line with corn popped in lime.>" noun="clue" adjective="5" listed="false" traits=[t_clue] ;
@@ -2656,6 +2668,63 @@ on_command {
          }
       }
    }
+   : if (is_present "perfume") {
+      : match "wear perfume;use perfume;spray perfume;spritz perfume" {
+            : print "You spritz the floral perfume onto yourself. It transports you to the field of flowers!" ;
+            : press_any_key ;
+            : goto "loc_flowers" ;
+            : create "perfume" target="inventory" ;
+            : redescribe ;
+      }
+      : match "smell perfume" {
+         : print "It smells like a field of flowers on a bright sunny day. You wouldn't mind wearing[wear perfume] it." ;
+         : done ;
+      }
+      : match "give perfume" {
+         : print "No way! You're not giving up this magical flower concoction." ;
+         : done ;
+      }
+      : match "drink perfume" {
+         : print "Perfume generally doesn't taste good. You don't think this would be an exception." ;
+         : done ;
+      }
+   }
+   : if (is_present "purple_potion") {
+      : match "smell potion" {
+         : print "It smells like damp soil, trees, and flowers." ;
+         : done ;
+      }
+      : match "drink potion" {
+         : print "You take a tiny sip of the potion and spit it back out. That doesn't taste good." ;
+         : done ;
+      }
+   }
+   : if (is_present "liquid_fire") {
+      : match "drink fire;eat fire;sip fire;taste fire" {
+         : print "You take a sip of the liquid fire. Your mouth and throat burn like nothing you've ever felt before..." ;
+         : press_any_key ;
+         : print "You let out a huge belch and are shocked to have flames billow from your mouth like a dragon!" ;
+         : if (!achievement_belched_fire) {
+            : pause "1600" ;
+            : gosub "achievement" ;
+            : print "^c^Belched fire like a dragon" ;
+            : set_true "achievement_belched_fire" ;
+         }
+         : done ;
+      }
+      : match "pour fire;drop fire" {
+         : print "You drop some of the liquid fire on the ground, and a fire erupts. You quickly stamp it out with your foot." ;
+         : done ;
+      }
+      : match "smell fire" {
+         : print "It smells like a campfire." ;
+         : done ;
+      }
+   }
+   : match "examine self" {
+      : print "You are 13-years-old. You look like any kid who swims and runs through the forest every day - dirty, strong, sun-darkened, and messy." ;
+      : done ;
+   }
 }
 
 #########################
@@ -2674,19 +2743,17 @@ on_command_2 {
          : print "You have finished the tutorial. Type HELP if you need more help!" category="tutorial";
          : done ;
       }
-      : if (preposition_is "" || preposition_is "on") {
-         : if (!tutorial_is_on) {
-            : print "The tutorial is now turned ON." category="tutorial";
-         }
+      : else_if (!preposition_is "on" || (preposition_is "" && tutorial_is_on)) {
+         : set_false "tutorial_is_on" ;
+         : print "The tutorial is now turned OFF." category="tutorial";
+      }
+      : else {
+         : print "The tutorial is now turned ON." category="tutorial";
          : set_true "tutorial_is_on" ;
          : print "Moving to the tutorial location..." category="tutorial";
          : press_any_key ;
          : goto "loc_town2" ;
          : redescribe ;
-      }
-      : else {
-         : set_false "tutorial_is_on" ;
-         : print "The tutorial is now turned OFF." category="tutorial";
       }
    }
    : match "map -;_ map" {
@@ -2816,10 +2883,10 @@ on_command_2 {
                   final_sep -> (", and ")
                   mutate    -> (strip_article(d(item())))
                }
-               +".") graphic="icon_potions" ;
+               +".") graphic="icon_food" ;
       }
       : if (count "inventory_food" == 0) {
-         : print "<^b^FOOD:<#000>> <none<#fff>>." graphic="icon_potions" ;
+         : print "<^b^FOOD:<#000>> <none<#fff>>." graphic="icon_food" ;
       }
       : if (count "inventory_items" > 0) {
          : print (
@@ -2881,7 +2948,10 @@ on_command_2 {
       : goto "loc_witch" ;
       : redescribe ;
    }
-
+   : match "view achievements;list achievements;achievements -" {
+      : print "{achievements}" ;
+      : done ;
+   }
    : match "credit _;credits _;info -;information -;fonts -" {
       : print "^c^^b^<•<#78c>> <+<#89d>> <C<#9ae>><R<#abf>><E<#bcf>><D<#9ae>><I<#abf>><T<#bcf>><S<#9ae>> <+<#89d>> <•<#78c>>" ;
       : print ("<^b^"+ sys(9000) +">[https://grizel.itch.io/sindrella] ("+ sys(9070)+")") ; // 9000=gameinfo_game_name, 9070=gameinfo_game_version
@@ -2972,7 +3042,7 @@ subroutines {
          : print ("<^b^You have picked up a new item!> \n You now have "+d(s1())+".") graphic="icon_items" ;
       }
       : if (s1_has_trait "t_food") {
-         : print ("<^b^You have picked up a new food item!> \n You now have "+d(s1())+".") graphic="icon_potions" ;
+         : print ("<^b^You have picked up a new food item!> \n You now have "+d(s1())+".") graphic="icon_food" ;
       }
       : done ;
    }
@@ -3455,7 +3525,7 @@ subroutines {
          : print ("You don't have "+d(s1())+"!");
          : done ;
       }
-      : print ("You add "+d(s1())+" to the cauldron.") ;
+      : print ("You add the "+d(s1())+" to the cauldron.") graphic="icon_cauldron";
       : success ;
       : add_trait subject -> (s1()) trait="t_in_cauldron";
       : create entity -> (s1()) target="in_the_cauldron" ;
@@ -3465,7 +3535,7 @@ subroutines {
       }
    }
    cauldron_remove : subroutine {
-      : print ("You take "+d(s1())+" out of the cauldron.") ;
+      : print ("You take the "+d(s1())+" out of the cauldron.") ;
       : decrement "cauldron_ingredients" ;
       : remove_trait subject -> (s1()) trait="t_in_cauldron";
       : create entity -> (s1()) target="inventory" ;
@@ -3475,10 +3545,44 @@ subroutines {
       : press_any_key ;
       ## Create the purple potion
       : if (has_trait {subject="aster" trait="t_in_cauldron"} && has_trait {subject="pansies" trait="t_in_cauldron"} && has_trait {subject="webcap" trait="t_in_cauldron"}) {
-         : print "You brewed a purple potion!" graphic="icon_cauldron";
+         : print "You brewed a purple potion!" graphic="icon_potion" ;
          : success ;
          : press_any_key ;
          : create "purple_potion" ;
+         : gosub "empty_cauldron" ;
+         : done ;
+      }
+      ## Create perfume (just for fun, not necessary to win the game)
+      : else_if (has_trait {subject="daisy" trait="t_in_cauldron"} && has_trait {subject="torch_lily" trait="t_in_cauldron"} && has_trait {subject="tulip" trait="t_in_cauldron"}) {
+         : print "You brewed some perfume!" graphic="icon_potionb" ;
+         : if (achievement_brewed_perfume) {
+            : success ;
+         }
+         : else {
+            : pause "1600" ;
+            : gosub "achievement" ;
+            : print "^c^Brewed a floral perfume" ;
+            : set_true "achievement_brewed_perfume" ;
+         }
+         : press_any_key ;
+         : create "perfume" ;
+         : gosub "empty_cauldron" ;
+         : done ;
+      }
+      ## Create fire potion (just for fun, not necessary to win the game)
+      : else_if (has_trait {subject="bolete" trait="t_in_cauldron"} && has_trait {subject="torch_lily" trait="t_in_cauldron"} && has_trait {subject="tulip" trait="t_in_cauldron"}) {
+         : print "You brewed liquid fire!" graphic="icon_potiony" ;
+         : if (achievement_brewed_liquid_fire) {
+            : success ;
+         }
+         : else {
+            : pause "1600" ;
+            : gosub "achievement" ;
+            : print "^c^Brewed liquid fire" ;
+            : set_true "achievement_brewed_liquid_fire" ;
+         }
+         : press_any_key ;
+         : create "liquid_fire" ;
          : gosub "empty_cauldron" ;
          : done ;
       }
@@ -3974,35 +4078,38 @@ assets {
       }
       
       ## LOCATION GRAPHICS
-      loc_town1 : png "https://puzzle.grizel.in/midsummer/header/town1.png" scaling_mode="pixel_art" ;
-      loc_town2 : png "https://puzzle.grizel.in/midsummer/header/town2.png" scaling_mode="pixel_art" ;
-      loc_shops1 : png "https://puzzle.grizel.in/midsummer/header/shops1.png" scaling_mode="pixel_art" ;
-      loc_shops2 : png "https://puzzle.grizel.in/midsummer/header/shops2.png" scaling_mode="pixel_art" ;
-      loc_circus1 : png "https://puzzle.grizel.in/midsummer/header/circus1.png" scaling_mode="pixel_art" ;
-      loc_circus2 : png "https://puzzle.grizel.in/midsummer/header/circus2.png" scaling_mode="pixel_art" ;
+      loc_town1 : png "https://puzzle.grizel.in/midsummer/header/town1.jpg" scaling_mode="pixel_art" ;
+      loc_town2 : png "https://puzzle.grizel.in/midsummer/header/town2.jpg" scaling_mode="pixel_art" ;
+      loc_shops1 : png "https://puzzle.grizel.in/midsummer/header/shops1.jpg" scaling_mode="pixel_art" ;
+      loc_shops2 : png "https://puzzle.grizel.in/midsummer/header/shops2.jpg" scaling_mode="pixel_art" ;
+      loc_circus1 : png "https://puzzle.grizel.in/midsummer/header/circus1.jpg" scaling_mode="pixel_art" ;
+      loc_circus2 : png "https://puzzle.grizel.in/midsummer/header/circus2.jpg" scaling_mode="pixel_art" ;
       loc_darts : png "https://puzzle.grizel.in/midsummer/header/darts.png" scaling_mode="pixel_art" ;
       loc_fortune : png "https://puzzle.grizel.in/midsummer/header/fortune.png" scaling_mode="pixel_art" ;
-      loc_river1 : png "https://puzzle.grizel.in/midsummer/header/river1.png" scaling_mode="pixel_art" ;
-      loc_river2 : png "https://puzzle.grizel.in/midsummer/header/river2.png" scaling_mode="pixel_art" ;
-      loc_bridge : png "https://puzzle.grizel.in/midsummer/header/bridge.png" scaling_mode="pixel_art" ;
-      loc_enchanted1 : png "https://puzzle.grizel.in/midsummer/header/river_enchanted1.png" scaling_mode="pixel_art" ;
-      loc_enchanted2 : png "https://puzzle.grizel.in/midsummer/header/river_enchanted2.png" scaling_mode="pixel_art" ;
-      loc_witch : png "https://puzzle.grizel.in/midsummer/header/witch.png" scaling_mode="pixel_art" ;
-      loc_graveyard : png "https://puzzle.grizel.in/midsummer/header/graveyard.png" scaling_mode="pixel_art" ;
-      loc_mushrooms1 : png "https://puzzle.grizel.in/midsummer/header/mushrooms.png" scaling_mode="pixel_art" ;
-      loc_mushrooms2 : png "https://puzzle.grizel.in/midsummer/header/mushrooms2.png" scaling_mode="pixel_art" ;
-      loc_fairy : png "https://puzzle.grizel.in/midsummer/header/fairy.png" scaling_mode="pixel_art" ;
-      loc_pathmagical : png "https://puzzle.grizel.in/midsummer/header/path_magical.png" scaling_mode="pixel_art" ;
-      loc_path1 : png "https://puzzle.grizel.in/midsummer/header/path1.png" scaling_mode="pixel_art" ;
-      loc_flowers : png "https://puzzle.grizel.in/midsummer/header/flowers.png" scaling_mode="pixel_art" ;
-      loc_path2 : png "https://puzzle.grizel.in/midsummer/header/path2.png" scaling_mode="pixel_art" ;
-      loc_tower : png "https://puzzle.grizel.in/midsummer/header/tower2.png" scaling_mode="pixel_art" ;
+      loc_river1 : png "https://puzzle.grizel.in/midsummer/header/river1.jpg" scaling_mode="pixel_art" ;
+      loc_river2 : png "https://puzzle.grizel.in/midsummer/header/river2.jpg" scaling_mode="pixel_art" ;
+      loc_bridge : png "https://puzzle.grizel.in/midsummer/header/bridge.jpg" scaling_mode="pixel_art" ;
+      loc_enchanted1 : png "https://puzzle.grizel.in/midsummer/header/river_enchanted1.jpg" scaling_mode="pixel_art" ;
+      loc_witch : png "https://puzzle.grizel.in/midsummer/header/witch.jpg" scaling_mode="pixel_art" ;
+      loc_graveyard : png "https://puzzle.grizel.in/midsummer/header/graveyard.jpg" scaling_mode="pixel_art" ;
+      loc_mushrooms1 : png "https://puzzle.grizel.in/midsummer/header/mushrooms.jpg" scaling_mode="pixel_art" ;
+      loc_mushrooms2 : png "https://puzzle.grizel.in/midsummer/header/mushrooms2.jpg" scaling_mode="pixel_art" ;
+      loc_fairy : png "https://puzzle.grizel.in/midsummer/header/fairy.jpg" scaling_mode="pixel_art" ;
+      loc_pathmagical : png "https://puzzle.grizel.in/midsummer/header/path_magical.jpg" scaling_mode="pixel_art" ;
+      loc_path1 : png "https://puzzle.grizel.in/midsummer/header/path1.jpg" scaling_mode="pixel_art" ;
+      loc_flowers : png "https://puzzle.grizel.in/midsummer/header/flowers.jpg" scaling_mode="pixel_art" ;
+      loc_path2 : png "https://puzzle.grizel.in/midsummer/header/path2.jpg" scaling_mode="pixel_art" ;
+      loc_tower : png "https://puzzle.grizel.in/midsummer/header/tower2.jpg" scaling_mode="pixel_art" ;
    
       ## INVENTORY GRAPHICS
-      icon_potions : png "https://puzzle.grizel.in/sindrella/inline/potion.png" scaling_mode="pixel_art" ;
-      icon_ingredients : png "https://puzzle.grizel.in/sindrella/inline/ingredient.png" scaling_mode="pixel_art" ;
-      icon_items : png "https://puzzle.grizel.in/sindrella/inline/item.png" scaling_mode="pixel_art" ;
-      icon_cauldron : png "https://puzzle.grizel.in/sindrella/inline/cauldron.png" scaling_mode="pixel_art" ;
+      icon_potion : png "https://puzzle.grizel.in/midsummer/inline/potion.png" scaling_mode="pixel_art" ;
+      icon_potionb : png "https://puzzle.grizel.in/midsummer/inline/potion-blue.png" scaling_mode="pixel_art" ;
+      icon_potiony : png "https://puzzle.grizel.in/midsummer/inline/potion-yellow.png" scaling_mode="pixel_art" ;
+      icon_ingredients : png "https://puzzle.grizel.in/midsummer/inline/ingredient.png" scaling_mode="pixel_art" ;
+      icon_items : png "https://puzzle.grizel.in/midsummer/inline/item.png" scaling_mode="pixel_art" ;
+      icon_cauldron : png "https://puzzle.grizel.in/midsummer/inline/cauldron.png" scaling_mode="pixel_art" ;
+      icon_food : png "https://puzzle.grizel.in/midsummer/inline/food.png" scaling_mode="pixel_art" ;
+      icon_text : png "https://puzzle.grizel.in/midsummer/inline/text.png" scaling_mode="pixel_art" ;
       icon_blank : png "https://puzzle.grizel.in/sindrella/inline/icon_blank.png" scaling_mode="pixel_art" ;
 
       ## INLINE GRAPHICS
@@ -4013,7 +4120,6 @@ assets {
       ## SOUND EFFECTS
 
       incidental_cauldron1 : sound_sample "https://puzzle.grizel.in/snowhaven/sound/effects/drop-in-stew.wav";
-      # The background music is "Field Theme 1" and "Field Theme 2" by SVL at https://svl.itch.io
 
       ## MUSIC
 
@@ -4030,16 +4136,16 @@ assets {
 
    ##### FONTS #####
    fonts {
-      userfont_niconne : ttf {
-         filepath = "https://fonts.gstatic.com/s/niconne/v13/w8gaH2QvRug1_rTfnQyn2Q.woff2"
-         snap_vert    = "true"
+      // userfont_niconne : ttf {
+      //    filepath = "https://fonts.gstatic.com/s/niconne/v13/w8gaH2QvRug1_rTfnQyn2Q.woff2"
+      //    snap_vert    = "true"
          
-         // This is the balance between average vertical pixels and average horz pixels for
-         // use in mapping the font's sizing to the 'columns' property in the theme settings.
-         horz_pixels  = "8"
-         vert_pixels  = "8"
-         font_scale_multiplier = "2.0"
-      }
+      //    // This is the balance between average vertical pixels and average horz pixels for
+      //    // use in mapping the font's sizing to the 'columns' property in the theme settings.
+      //    horz_pixels  = "8"
+      //    vert_pixels  = "8"
+      //    font_scale_multiplier = "2.0"
+      // }
       
       userfont_envious : base64_ttf horz_pixels = "8" vert_pixels = "8" font_scale_multiplier = "1" experimental_line_height_ratio = "1.2" snap_vert = "true" "AAEAAAARAQAABAAQTFRTSJ7qI8YAAAOEAAAAZ09TLzJlFFpeAAABmAAAAGBWRE1Ycf15dQAAA+wAAAXgY21hcA+TFDEAABMsAAACbGN2dCAEXABkAAAXQAAAABRmcGdtBlmcNwAAFZgAAAFzZ2FzcAAXAAkAAILQAAAAEGdseWZhZre0AAAXVAAAZnhoZG14IVpLvAAACcwAAAlgaGVhZBe6JEYAAAEcAAAANmhoZWEGQQOEAAABVAAAACRobXR4MkAufAAAAfgAAAGMbG9jYdNW7xQAAH3MAAAAyG1heHACdAMYAAABeAAAACBuYW1lJoUS+wAAfpQAAANLcG9zdFtJX0gAAIHgAAAA7XByZXCCvJjLAAAXDAAAADIAAQAAAAEAAH154ZhfDzz1ABkDIAAAAADYiCBnAAAAANzkwWkAAP+cAyACvAAAAAkAAgAAAAAAAAABAAACvAAAAGQDIAAAAAADIAABAAAAAAAAAAAAAAAAAAAAYwABAAAAYwAyAAYAAAAAAAEAAAAAAAoAAAIAAuUAAAAAAAMDIAGQAAUAAAIwAggAAABwAjACCAAAAX4AKADICAoAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAEVOVlkAAAAAAKkCvAAAAGQCvABkAAAAAQAAAAAB9AK8AAAAIAAAAyAAAAAAAAADIAAAAyAAAAMgAGQDIABkAyAAZAMgASwDIADIAyAAyAMgAGQDIABkAyAAyAMgAGQDIAEsAyAAyAMgAGQDIABkAyAAZAMgAGQDIABkAyAAZAMgAGQDIABkAyAAZAMgAGQDIAEsAyAAyAMgAMgDIABkAyAAyAMgAGQDIABkAyAAZAMgAGQDIABkAyAAZAMgAGQDIABkAyAAZAMgAGQDIABkAyAAZAMgAGQDIABkAyAAZAMgAGQDIABkAyAAZAMgAGQDIABkAyAAZAMgAGQDIABkAyAAZAMgAGQDIABkAyAAZAMgAGQDIAEsAyAAyAMgAMgDIABkAyAAAAMgAGQDIABkAyAAZAMgAGQDIABkAyAAZAMgAGQDIABkAyAAyAMgAMgDIABkAyAAyAMgAGQDIABkAyAAZAMgAGQDIABkAyAAZAMgAGQDIABkAyAAZAMgAGQDIABkAyAAZAMgAGQDIABkAyAAZAMgASwDIABkAyAAZAMgAGQDIABkAyABLAMgAMgDIABkAAAAYwEBAQEBAUwBTExMAQEBAQEBAQEBAQEBTAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBATsBAQEBAQEBAQEBAQEBAQEBAQEBTDsBOwE7AQEBAQAAAAABAAEBAQEBAAwA+Aj/AAgAB///AAkACP/+AAoACf/+AAsACv/+AAwAC//+AA0ADP/+AA4ADf/+AA8ADv/+ABAADv/+ABEAD//9ABIAEP/9ABMAEf/9ABQAEv/9ABUAE//9ABYAFP/9ABcAFf/9ABgAFf/9ABkAFv/8ABoAF//8ABsAGP/8ABwAGf/8AB0AGv/8AB4AG//8AB8AHP/8ACAAHP/8ACEAHf/7ACIAHv/7ACMAH//7ACQAIP/7ACUAIf/7ACYAIv/7ACcAI//7ACgAI//7ACkAJP/6ACoAJf/6ACsAJv/6ACwAJ//6AC0AKP/6AC4AKf/6AC8AKv/6ADAAKv/6ADEAK//5ADIALP/5ADMALf/5ADQALv/5ADUAL//5ADYAMP/5ADcAMf/5ADgAMf/5ADkAMv/4ADoAM//4ADsANP/4ADwANf/4AD0ANv/4AD4AN//4AD8AOP/4AEAAOP/4AEEAOf/3AEIAOv/3AEMAO//3AEQAPP/3AEUAPf/3AEYAPv/3AEcAP//3AEgAP//3AEkAQP/2AEoAQf/2AEsAQv/2AEwAQ//2AE0ARP/2AE4ARf/2AE8ARv/2AFAARv/2AFEAR//1AFIASP/1AFMASf/1AFQASv/1AFUAS//1AFYATP/1AFcATf/1AFgATf/1AFkATv/0AFoAT//0AFsAUP/0AFwAUf/0AF0AUv/0AF4AU//0AF8AVP/0AGAAVP/0AGEAVf/zAGIAVv/zAGMAV//zAGQAWP/zAGUAWf/zAGYAWv/zAGcAW//zAGgAW//zAGkAXP/yAGoAXf/yAGsAXv/yAGwAX//yAG0AYP/yAG4AYf/yAG8AYv/yAHAAYv/yAHEAY//xAHIAZP/xAHMAZf/xAHQAZv/xAHUAZ//xAHYAaP/xAHcAaf/xAHgAaf/xAHkAav/wAHoAa//wAHsAbP/wAHwAbf/wAH0Abv/wAH4Ab//wAH8AcP/wAIAAcP/wAIEAcf/vAIIAcv/vAIMAc//vAIQAdP/vAIUAdf/vAIYAdv/vAIcAd//vAIgAd//vAIkAeP/uAIoAef/uAIsAev/uAIwAe//uAI0AfP/uAI4Aff/uAI8Afv/uAJAAfv/uAJEAf//tAJIAgP/tAJMAgf/tAJQAgv/tAJUAg//tAJYAhP/tAJcAhf/tAJgAhf/tAJkAhv/sAJoAh//sAJsAiP/sAJwAif/sAJ0Aiv/sAJ4Ai//sAJ8AjP/sAKAAjP/sAKEAjf/rAKIAjv/rAKMAj//rAKQAkP/rAKUAkf/rAKYAkv/rAKcAk//rAKgAk//rAKkAlP/qAKoAlf/qAKsAlv/qAKwAl//qAK0AmP/qAK4Amf/qAK8Amv/qALAAmv/qALEAm//pALIAnP/pALMAnf/pALQAnv/pALUAn//pALYAoP/pALcAof/pALgAof/pALkAov/oALoAo//oALsApP/oALwApf/oAL0Apv/oAL4Ap//oAL8AqP/oAMAAqP/oAMEAqf/nAMIAqv/nAMMAq//nAMQArP/nAMUArf/nAMYArv/nAMcAr//nAMgAr//nAMkAsP/mAMoAsf/mAMsAsv/mAMwAs//mAM0AtP/mAM4Atf/mAM8Atv/mANAAtv/mANEAt//lANIAuP/lANMAuf/lANQAuv/lANUAu//lANYAvP/lANcAvf/lANgAvf/lANkAvv/kANoAv//kANsAwP/kANwAwf/kAN0Awv/kAN4Aw//kAN8AxP/kAOAAxP/kAOEAxf/jAOIAxv/jAOMAx//jAOQAyP/jAOUAyf/jAOYAyv/jAOcAy//jAOgAy//jAOkAzP/iAOoAzf/iAOsAzv/iAOwAz//iAO0A0P/iAO4A0f/iAO8A0v/iAPAA0v/iAPEA0//hAPIA1P/hAPMA1f/hAPQA1v/hAPUA1//hAPYA2P/hAPcA2f/hAPgA2f/hAPkA2v/gAPoA2//gAPsA3P/gAPwA3f/gAP0A3v/gAP4A3//gAP8A4P/gAAAAFwAAAGgJCQkACQkJCQgJCAgICQkJCQkJCQkJCQkJCAkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQgJCQkJCQkJCQkJCQkJCQkJCQkJCAgJCAkICQkJCQAAAAoLCgAKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCwoKCgoKCgoKCgoKCgoKCgoKCgoKCwoLCgsKCgoKAAAACwwLAAsLCwsKCwoKCgsLCwsLCwsLCwsLCwwLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwoLCwsLCwsLCwsAAAAMDQwADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA0MDAwMDAwMDAwMDAwMDAwMDAwMDAoMCgwNDAwMDAAAAA0ODQANDQ0NDg0ODg4NDQ0NDQ0NDQ0NDQ0MDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0ODQ0NDQ0NDQ0NAAAADxAPAA8PDw8QDxAQEA8PDw8PDw8PDw8PDxAPDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8QDw8PDw8PDw8PDw8PDw8PDw8PDxAQDxAPEA8PDw8AAAAQEBAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEAAAABEREQAREREREBEQEBAREREREREREREREREQEREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREBEREREREREREREREREREREREREQEBEQERARERERAAAAExQTABMTExMSExISEhMTExMTExMTExMTExQTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExITExMTExMTExMAAAAVFhUAFRUVFRYVFhYWFRUVFRUVFRUVFRUVFBUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFhUVFRUVFRUVFQAAABgYGAAYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgY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Mo4zPAAAABcBGgABAAAAAAAAABwAAAABAAAAAAABAAcAHAABAAAAAAACAAcAIwABAAAAAAADACIAKgABAAAAAAAEAA8ATAABAAAAAAAFAA0AWwABAAAAAAAGAA8AaAABAAAAAAAIAAwAdwABAAAAAAAJAAwAgwABAAAAAAALABQAjwABAAAAAAAMABMAowABAAAAAAASAA8AtgADAAEECQAAADgAxQADAAEECQABAA4A/QADAAEECQACAA4BCwADAAEECQADAEQBGQADAAEECQAEAB4BXQADAAEECQAFABoBewADAAEECQAGAB4BlQADAAEECQAIABgBswADAAEECQAJABgBywADAAEECQALACgB4wADAAEECQAMACYCC0NvcHlyaWdodCAyMDE5IERhbWllbiBHdWFyZC5FbnZpb3VzUmVndWxhckRhbWllbkd1YXJkOiBFbnZpb3VzIFJlZ3VsYXI6IDIwMTlFbnZpb3VzIFJlZ3VsYXJWZXJzaW9uIDEuMDAwRW52aW91cy1SZWd1bGFyRGFtaWVuIEd1YXJkRGFtaWVuIEd1YXJkaHR0cHM6Ly9lbnZ5dGVjaC5jb21odHRwczovL2RhbWllbmcuY29tRW52aW91cyBSZWd1bGFyAEMAbwBwAHkAcgBpAGcAaAB0ACAAMgAwADEAOQAgAEQAYQBtAGkAZQBuACAARwB1AGEAcgBkAC4ARQBuAHYAaQBvAHUAcwBSAGUAZwB1AGwAYQByAEQAYQBtAGkAZQBuAEcAdQBhAHIAZAA6ACAARQBuAHYAaQBvAHUAcwAgAFIAZQBnAHUAbABhAHIAOgAgADIAMAAxADkARQBuAHYAaQBvAHUAcwAgAFIAZQBnAHUAbABhAHIAVgBlAHIAcwBpAG8AbgAgADEALgAwADAAMABFAG4AdgBpAG8AdQBzAC0AUgBlAGcAdQBsAGEAcgBEAGEAbQBpAGUAbgAgAEcAdQBhAHIAZABEAGEAbQBpAGUAbgAgAEcAdQBhAHIAZABoAHQAdABwAHMAOgAvAC8AZQBuAHYAeQB0AGUAYwBoAC4AYwBvAG0AaAB0AHQAcABzADoALwAvAGQAYQBtAGkAZQBuAGcALgBjAG8AbQAAAgAAAAAAAP/OAGQAAAABAAAAAAAAAAAAAAAAAAAAAABjAAABAgACAAMABwAIAAkACgALAAwADQAOAA8AEAARABIAEwAUABUAFgAXABgAGQAaABsAHAAdAB4AHwAgACEAIgAjACQAJQAmACcAKAApACoAKwAsAC0ALgAvADAAMQAyADMANAA1ADYANwA4ADkAOgA7ADwAPQA+AD8AQABBAEIARABFAEYARwBIAEkASgBLAEwATQBOAE8AUABRAFIAUwBUAFUAVgBXAFgAWQBaAFsAXABdAF4AXwBgAGEAhQCLAAQABQAGBE5VTEwAAAAAAAADAAgAAgAQAAH//wAD";
 	}
@@ -4169,33 +4275,7 @@ themes {
       }
 
    }
-   
-   invitation_theme : theme {
-      
-      extends = main_theme
-      theme_settings {
-         font = userfont_niconne
-         // columns = 50
-      }
-      screen {
-         content_width = 100
-      }
-      colors {
-         paper = #ffc
-         pen = #000
-         choice_paper  = ["#ffc","#ffc"]
-         choice_pen  = ["#000","#000"]
-         choice_selected_paper  = ["#fff"]
-      }
-   }
-   
-   win_theme : theme {
-      extends = invitation_theme
-      theme_settings {
-         layout = P* "achievements"
-         layout_mobile = P* "achievements"
-      }
-   }
+
 }
 
 #########################
@@ -4216,5 +4296,5 @@ game_settings {
 # TO-DO LIST
 #########################
 
-# Replace the icon graphics
 # Add sound effects
+# View achievements at the news stand
