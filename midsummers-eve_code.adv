@@ -13,7 +13,7 @@ game_information {
 	written_by = Tristin Grizel Dean
  	uuid = 9eb3f538-4258-42b0-b7f3-ae3e9eb98aec
 	year_of_release = 2023
-	game_version = 1.0.6
+	game_version = 1.0.7
 	compatibility_version = 1
 	copyright_message = Copyright (C) 2022 Tristin Grizel Dean. Not for commercial use. Do not redistribute.
 	aimed_at  = [ children,teenagers,adults ]
@@ -191,6 +191,7 @@ booleans {
    achievement_brewed_perfume : boolean scope="survivor" ;
    achievement_brewed_liquid_fire : boolean scope="survivor" ;
    achievement_belched_fire : boolean scope="survivor" ;
+   achievement_kissed_the_frog : boolean scope="survivor" ;
    achievement_gave_witch_apple : boolean scope="survivor" ;
    achievement_fed_gryphon_pizza : boolean scope="survivor" ;
    achievement_won_magic_number : boolean scope="survivor" ;
@@ -257,7 +258,7 @@ strings {
    ) ;
 
    ## ACHIEVEMENTS
-achievements : string "^c^Achievements:^n^{achievement_won_the_game ? `\nWon the game`}{achievement_lost_the_game ? `\nLost the game`}{achievement_gave_witch_apple ? `\nWitches love apples`}{achievement_fed_gryphon_pizza ? `\nGryphons love pizza`}{achievement_won_magic_number ? `\nGuessed the magic number`}{achievement_won_wheel_fortune ? `\nMastered the wheel of fortune`}{achievement_went_swimming ? `\nWent for a swim`}{achievement_brewed_perfume ? `\nBrewed a floral perfume`}{achievement_brewed_liquid_fire ? `\nBrewed liquid fire`}{achievement_belched_fire ? `\nBelched fire like a dragon`}{achievement_returned_necklace ? `\nReturned the stolen necklace`}{achievement_returned_ring ? `\nReturned the stolen ring`}{achievement_new_pet_chicken ? `\nGot a new pet chicken`}{achievement_caught_the_mayor ? `\nCaught the mayor`}" ;
+achievements : string "^c^Achievements:^n^{achievement_won_the_game ? `\nWon the game`}{achievement_lost_the_game ? `\nLost the game`}{achievement_gave_witch_apple ? `\nWitches love apples`}{achievement_fed_gryphon_pizza ? `\nGryphons love pizza`}{achievement_kissed_the_frog ? `\nThe frog is no prince charming}{achievement_won_magic_number ? `\nGuessed the magic number`}{achievement_won_wheel_fortune ? `\nMastered the wheel of fortune`}{achievement_went_swimming ? `\nWent for a swim`}{achievement_brewed_perfume ? `\nBrewed a floral perfume`}{achievement_brewed_liquid_fire ? `\nBrewed liquid fire`}{achievement_belched_fire ? `\nBelched fire like a dragon`}{achievement_returned_necklace ? `\nReturned the stolen necklace`}{achievement_returned_ring ? `\nReturned the stolen ring`}{achievement_new_pet_chicken ? `\nGot a new pet chicken`}{achievement_caught_the_mayor ? `\nCaught the mayor`}" ;
    
    ## DYNAMIC OBJECTS / SCENERY
    necklace_name : dynamic_string (has_taken "necklace" ? "a necklace[examine necklace]":"something shiny[examine shiny]") ;
@@ -306,7 +307,7 @@ achievements : string "^c^Achievements:^n^{achievement_won_the_game ? `\nWon the
    sophie_desc : dynamic_string ("^n^A girl with curly golden locks and a wide-brimmed hat, wearing faded overalls.\n<^b^She has found "+(sophie_found)+" clues so far.>^m^") ;
    ollie_desc : dynamic_string ("^n^A boy with slicked-back blonde hair and a collared shirt, wearing pressed pants and leather shoes.\n<^b^He has found "+(ollie_found)+" clues so far.>^m^") ;
    reed_desc : dynamic_string ("^n^A tall, lanky boy with wild dark hair wearing worn trousers.\n<^b^He has found "+(reed_found)+" clues so far.>^m^") ;
-   francis_desc : dynamic_string ("^n^A boy with untamed hair and freckles, wearing overalls and rainboots.\n<^b^He has found "+(francis_found)+" clues so far.>^m^") ;
+   francis_desc : dynamic_string ("^n^A boy with a mop of wild hair and freckles, wearing dungarees and gumboots.\n<^b^He has found "+(francis_found)+" clues so far.>^m^") ;
    
 
    ## LOCATION DESCRIPTIONS
@@ -1373,13 +1374,13 @@ locations {
             : print "You'll need to choose something to use as bait." ;
             : done ;
          }
-         : match "bait hook with *" {
+         : match "bait hook with _" {
             : set_sentence "attach $2 to hook" ;
          }
          : match "use _ as bait" {
             : set_sentence "attach $1 to hook" ;
          }
-         : match "use popcorn with lime;attach popcorn with lime" {
+         : match "_ fish _ popcorn;_ bait _ popcorn;use popcorn with lime;attach popcorn with lime;go fishing with popcorn" {
             : set_sentence "attach popcorn to hook" ;
          }
          : match "put _ on hook;attach _ to hook" {
@@ -2721,6 +2722,22 @@ on_command {
          : done ;
       }
    }
+   : match "kiss frog" {
+      : if (is_present "frog") {
+         : print "Is there something magical about this frog? You'd better try kissing it just in case." ;
+         : press_any_key ;
+         : print "You scrunch up your face and give the frog a big kiss right on the lips..." ;
+         : press_any_key ;
+         : print "...yuck! That was gross. Nothing happens, except you think the frog smiled at you." ;
+         : if (!achievement_kissed_the_frog) {
+            : pause "1600" ;
+            : gosub "achievement" ;
+            : print "^c^The frog is no prince charming" ;
+            : set_true "achievement_kissed_the_frog" ;
+         }
+         : done ;
+      }
+   }
    : match "examine self" {
       : print "You are 13-years-old. You look like any kid who swims and runs through the forest every day - dirty, strong, sun-darkened, and messy." ;
       : done ;
@@ -3422,7 +3439,6 @@ subroutines {
                # This adds the lime trait to the popcorn. Otherwise the fishing activity won't work.
                : if (noun2_is "lime") {
                   : add_trait subject="popcorn" trait="t_lime" ;
-                  : print "yes this worked" ;
                }
          }
          : else_if (subject1_is "pizza") {
@@ -4297,4 +4313,3 @@ game_settings {
 #########################
 
 # Add sound effects
-# View achievements at the news stand
